@@ -63,10 +63,10 @@ function Insights() {
             }
           );
 
-          setBackdata(response.data.data);
+          setBackdata(response.data);
           createChartData(response.data.data);
           createPaymentChartData(response.data.data);
-          createLineChartData(response.data.data);
+          createLineChartData(response.data, selectedYear);
           setUser(response.data.name);
 
           setAuthUser(true);
@@ -162,15 +162,45 @@ function Insights() {
   };
 
   // Function to create line chart data
-  const createLineChartData = (data) => {
+  const createLineChartData = (data, selectedYear) => {
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
+    console.log("Months",months);
+    const budgetAmounts = data.budget ? Array(months.length).fill(0) : [];
+    console.log("Data Budget",data.budget);
+   
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    for (let i = 0; i < data.budget.length; i++) {
+      const budgetEntry = data.budget[i];
+      if(budgetEntry.year === selectedYear){
+        const index = monthNames.indexOf(budgetEntry.month);
+        budgetAmounts[index] = budgetEntry.amount;
+      }
+    }
+    // console.log("budget amount",budgetAmounts);
+    
+
     const monthlyData = months.map((month) => {
-      const filteredData = data.filter((entry) => {
+      const filteredData = data.data.filter((entry) => {
         const entryDate = new Date(entry.date);
         const entryMonth = entryDate.getMonth() + 1;
         const entryYear = entryDate.getFullYear();
         return entryMonth === month && entryYear === parseInt(selectedYear);
       });
+      // console.log("Data.Budget", data.budget[0].amount);
 
       const totalAmount = filteredData.reduce(
         (sum, entry) => sum + entry.Amount,
@@ -215,6 +245,16 @@ function Insights() {
           borderWidth: 2,
           fill: false,
           type: "line", // Set type to "line" for the line chart
+        },
+        {
+          label: "Budget Dots",
+          data: budgetAmounts,
+          pointBackgroundColor: "rgba(0, 255, 0, 1)",
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          type: "line", // Set type to "line" for the dots
+          fill: false,
+          showLine: false,
         },
       ],
     };
@@ -283,7 +323,7 @@ function Insights() {
     event.preventDefault();
     setDisplayYear(selectedYear);
     // Call the function to create line chart data
-    createLineChartData(Backdata);
+    createLineChartData(Backdata, selectedYear);
   };
 
   async function handleBudgetSubmit (event) {
