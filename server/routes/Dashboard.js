@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
   }).populate("user");
   const expenses = userExpense.expense;
   const budget = userExpense.budget;
-  
+
   const user = await User.findById(req.user.id);
   var username = "";
   if (user) {
@@ -56,21 +56,26 @@ router.post("/add", async (req, res) => {
     res.json({ error: "Error" });
   }
 });
-
 router.post("/addbudget", async (req, res) => {
   const entered_budget = req.body.budget;
   const currentDate = new Date();
-  const monthNumber = currentDate.getMonth();
-  const monthNames = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-  const currentMonthName = monthNames[monthNumber];
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.toLocaleString("default", {
+    month: "short",
+  });
 
   try {
-    // Assuming you want to update the budget for the current month
     const filter = { user: req.user.id };
-    const update = { $set: { [`budget.${currentMonthName}`]: entered_budget } };
+
+    const update = {
+      $addToSet: {
+        budget: {
+          year: currentYear,
+          month: currentMonth,
+          amount: entered_budget,
+        },
+      },
+    };
 
     const result = await Expense.updateOne(filter, update);
 
