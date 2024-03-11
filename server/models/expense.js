@@ -5,9 +5,19 @@ const expenseScehma = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  budget: {
-    type: Number
-  },
+  budget:[{Jan:{type:Number},
+    Feb:{type:Number},
+    Mar:{type:Number},
+    Apr:{type:Number},
+    May:{type:Number},
+    Jun:{type:Number},
+    Jul:{type:Number},
+    Aug:{type:Number},
+    Sep:{type:Number},
+    Oct:{type:Number},
+    Nov:{type:Number},
+    Dec:{type:Number}}]   
+  ,
   expense: [
     {
       Amount: {

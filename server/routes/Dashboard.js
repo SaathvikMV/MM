@@ -59,15 +59,26 @@ router.post("/add", async (req, res) => {
 
 router.post("/addbudget", async (req, res) => {
   const entered_budget = req.body.budget;
+  const currentDate = new Date();
+  const monthNumber = currentDate.getMonth();
+  const monthNames = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+  const currentMonthName = monthNames[monthNumber];
 
   try {
-    Expense.updateOne({ user: req.user.id }, { budget: entered_budget  }).then((result) => {
-      if (result.modifiedCount > 0) {
-        res.json({ message: "budget updated" });
-      } else {
-        res.json({ error: "budget not modified!" });
-      }
-    });
+    // Assuming you want to update the budget for the current month
+    const filter = { user: req.user.id };
+    const update = { $set: { [`budget.${currentMonthName}`]: entered_budget } };
+
+    const result = await Expense.updateOne(filter, update);
+
+    if (result.modifiedCount > 0) {
+      res.json({ message: "budget updated" });
+    } else {
+      res.json({ error: "budget not modified!" });
+    }
   } catch (err) {
     console.log(err);
     res.json({ error: "error occurred!" });

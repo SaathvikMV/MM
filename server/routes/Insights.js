@@ -30,7 +30,10 @@ router.get("/", async (req, res) => {
       console.log("User not found");
     }
 
-    res.json({data:userExpense.expense, name:username});
+    res.json({
+      data:userExpense.expense, 
+      name:username,
+      budget:userExpense.budget});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });

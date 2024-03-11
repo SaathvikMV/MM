@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 import { useMemo } from "react";
 import Navbar from "../components/Navbar";
 import { Doughnut, Line } from "react-chartjs-2";
@@ -44,6 +45,7 @@ function Insights() {
   const [DisplayMonth, setDisplayMonth] = useState("");
   const [DisplayYear, setDisplayYear] = useState("2024");
   const [noLineData, setNoLineData] = useState(false);
+  const [addbudget, setAddbudget] = useState();
 
   useEffect(() => {
     const handleFetchData = async () => {
@@ -231,6 +233,8 @@ function Insights() {
       setSelectedMonth(value);
     } else if (name === "year") {
       setSelectedYear(value);
+    }else if(name==="addbudget"){
+      setAddbudget(value)
     }
   };
 
@@ -282,8 +286,53 @@ function Insights() {
     createLineChartData(Backdata);
   };
 
+  async function handleBudgetSubmit (event) {
+    event.preventDefault();
+    console.log(addbudget);
+    try {
+      const token = localStorage.getItem("token");
+      console.log(token);
+      if (token) {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const res = await axios.post(
+          `http://localhost:5000/${user}/dashboard/addbudget`,
+          {
+            budget: addbudget,
+          },
+          {
+            headers,
+          }
+        );
+        console.log(res);
+
+        if (res.data && res.data.error) {
+          toast.error(res.data.error, {
+            duration: 3000,
+            position: "bottom-right",
+          });
+        } else if (res.data) {
+          toast.success(res.data.message, {
+            duration: 3000,
+            position: "bottom-right",
+          });
+        }
+      } else {
+        console.log("Token not available!!");
+      }
+    } catch (e) {
+      console.log(e);
+      toast.error("An unexpected error occured", {
+        duration: 3000,
+        position: "bottom-right",
+      });
+    }
+  };
+
   return (
     <>
+    <Toaster/>
       <head>
         <link rel="icon" type="image/png" href="/landing_page/rupee.png" />
         <title>PennyWise-Insights</title>
@@ -294,6 +343,7 @@ function Insights() {
           href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         />
         <link rel="stylesheet" href="/Smart_Insights/main.css" />
+        
       </head>
       <body>
         <Navbar user={user} />
@@ -364,7 +414,7 @@ function Insights() {
       >
         No data available for the selected filter.
       </p>
-    ) : (
+    ) : (   
       chartData.labels && (
         <div style={{ background: "white" }}>
           <Doughnut
@@ -431,6 +481,22 @@ function Insights() {
               )
             )}
           </div>
+        </div>
+        <div>
+        <form onSubmit={handleBudgetSubmit} className="inp-form">
+            <label for="item">Budget</label>
+            <input
+              type="number"
+              id="budget"
+              name="addbudget"
+              value={addbudget}
+              onChange={handleChange}
+            />
+
+            <button className="inp-but" type="submit">
+              Add
+            </button>
+          </form>
         </div>
 
         {/* links to other pages */}
