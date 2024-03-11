@@ -56,6 +56,7 @@ router.post("/add", async (req, res) => {
     res.json({ error: "Error" });
   }
 });
+
 router.post("/addbudget", async (req, res) => {
   const entered_budget = req.body.budget;
   const currentDate = new Date();
@@ -65,24 +66,50 @@ router.post("/addbudget", async (req, res) => {
   });
 
   try {
-    const filter = { user: req.user.id };
+    const userQuery = { user: req.user.id };
+    const existingEntry = await Expense.findOne({
+      ...userQuery,
+      "budget.year": currentYear,
+      "budget.month": currentMonth,
+    });
 
-    const update = {
-      $addToSet: {
-        budget: {
-          year: currentYear,
-          month: currentMonth,
-          amount: entered_budget,
+    if (existingEntry) {
+      // Update the existing entry
+      const result = await Expense.updateOne(
+        {
+          ...userQuery,
+          "budget.year": currentYear,
+          "budget.month": currentMonth,
         },
-      },
-    };
+        { $set: { "budget.$.amount": entered_budget } }
+      );
 
-    const result = await Expense.updateOne(filter, update);
-
-    if (result.modifiedCount > 0) {
-      res.json({ message: "budget updated" });
+      if (result.modifiedCount > 0) {
+        res.json({ message: "budget updated" });
+      } else {
+        res.json({ error: "budget not modified!" });
+      }
     } else {
-      res.json({ error: "budget not modified!" });
+      // If the array is empty or no matching entry found, add a new entry
+      const addResult = await Expense.updateOne(
+        userQuery,
+        {
+          $addToSet: {
+            budget: {
+              year: currentYear,
+              month: currentMonth,
+              amount: entered_budget,
+            },
+          },
+        },
+        { upsert: true } // Add this option to insert if no matching document is found
+      );
+
+      if (addResult.modifiedCount > 0 || addResult.upsertedCount > 0) {
+        res.json({ message: "budget added/updated" });
+      } else {
+        res.json({ error: "budget not modified!" });
+      }
     }
   } catch (err) {
     console.log(err);

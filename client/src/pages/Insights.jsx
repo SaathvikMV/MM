@@ -164,10 +164,7 @@ function Insights() {
   // Function to create line chart data
   const createLineChartData = (data, selectedYear) => {
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
-    console.log("Months",months);
-    const budgetAmounts = data.budget ? Array(months.length).fill(0) : [];
-    console.log("Data Budget",data.budget);
-   
+    let budgetAmounts = Array(months.length).fill(0);
     const monthNames = [
       "Jan",
       "Feb",
@@ -182,16 +179,13 @@ function Insights() {
       "Nov",
       "Dec",
     ];
-
     for (let i = 0; i < data.budget.length; i++) {
       const budgetEntry = data.budget[i];
-      if(budgetEntry.year === selectedYear){
-        const index = monthNames.indexOf(budgetEntry.month);
+      if (budgetEntry.year == selectedYear) {
+        let index = monthNames.indexOf(budgetEntry.month);
         budgetAmounts[index] = budgetEntry.amount;
       }
     }
-    // console.log("budget amount",budgetAmounts);
-    
 
     const monthlyData = months.map((month) => {
       const filteredData = data.data.filter((entry) => {
@@ -273,8 +267,8 @@ function Insights() {
       setSelectedMonth(value);
     } else if (name === "year") {
       setSelectedYear(value);
-    }else if(name==="addbudget"){
-      setAddbudget(value)
+    } else if (name === "addbudget") {
+      setAddbudget(value);
     }
   };
 
@@ -326,7 +320,7 @@ function Insights() {
     createLineChartData(Backdata, selectedYear);
   };
 
-  async function handleBudgetSubmit (event) {
+  async function handleBudgetSubmit(event) {
     event.preventDefault();
     console.log(addbudget);
     try {
@@ -368,11 +362,11 @@ function Insights() {
         position: "bottom-right",
       });
     }
-  };
+  }
 
   return (
     <>
-    <Toaster/>
+      <Toaster />
       <head>
         <link rel="icon" type="image/png" href="/landing_page/rupee.png" />
         <title>PennyWise-Insights</title>
@@ -383,7 +377,6 @@ function Insights() {
           href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         />
         <link rel="stylesheet" href="/Smart_Insights/main.css" />
-        
       </head>
       <body>
         <Navbar user={user} />
@@ -411,64 +404,62 @@ function Insights() {
             </button>
           </div>
           <div style={{ display: "flex", justifyContent: "space-around" }}>
-  <div style={{ maxWidth: "550px", margin: "auto" }}>
-    <h3 className="cat-text">
-      Category wise breakup of{" "}
-      {DisplayMonth ? DisplayMonth : "all the expenses"}
-    </h3>
-    {noData ? (
-      <p
-        style={{
-          color: "black",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        No data available for the selected filter.
-      </p>
-    ) : (
-      chartData.labels && (
-        <div style={{ background: "white" }}>
-          <Doughnut
-            data={chartData}
-            height={200} // Set the height as needed
-            width={200}  // Set the width as needed (same as height for equal size)
-          />
-        </div>
-      )
-    )}
-  </div>
+            <div style={{ maxWidth: "550px", margin: "auto" }}>
+              <h3 className="cat-text">
+                Category wise breakup of{" "}
+                {DisplayMonth ? DisplayMonth : "all the expenses"}
+              </h3>
+              {noData ? (
+                <p
+                  style={{
+                    color: "black",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  No data available for the selected filter.
+                </p>
+              ) : (
+                chartData.labels && (
+                  <div style={{ background: "white" }}>
+                    <Doughnut
+                      data={chartData}
+                      height={200} // Set the height as needed
+                      width={200} // Set the width as needed (same as height for equal size)
+                    />
+                  </div>
+                )
+              )}
+            </div>
 
-  <div style={{ maxWidth: "550px", margin: "auto" }}>
-    <h3 className="cat-text">
-      Payment wise breakup of{" "}
-      {DisplayMonth ? DisplayMonth : "all the expenses"}
-    </h3>
-    {noData ? (
-      <p
-        style={{
-          color: "black",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        No data available for the selected filter.
-      </p>
-    ) : (   
-      chartData.labels && (
-        <div style={{ background: "white" }}>
-          <Doughnut
-            data={paymentChartData}
-            height={200} // Set the height as needed
-            width={200}  // Set the width as needed (same as height for equal size)
-          />
-        </div>
-      )
-    )}
-  </div>
-</div>
-
-
+            <div style={{ maxWidth: "550px", margin: "auto" }}>
+              <h3 className="cat-text">
+                Payment wise breakup of{" "}
+                {DisplayMonth ? DisplayMonth : "all the expenses"}
+              </h3>
+              {noData ? (
+                <p
+                  style={{
+                    color: "black",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  No data available for the selected filter.
+                </p>
+              ) : (
+                chartData.labels && (
+                  <div style={{ background: "white" }}>
+                    <Doughnut
+                      data={paymentChartData}
+                      height={200} // Set the height as needed
+                      width={200} // Set the width as needed (same as height for equal size)
+                    />
+                  </div>
+                )
+              )}
+            </div>
+          </div>
         </div>
 
         <div
@@ -523,7 +514,7 @@ function Insights() {
           </div>
         </div>
         <div>
-        <form onSubmit={handleBudgetSubmit} className="inp-form">
+          <form onSubmit={handleBudgetSubmit} className="inp-form">
             <label for="item">Budget</label>
             <input
               type="number"
