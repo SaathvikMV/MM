@@ -6,6 +6,10 @@ import LoadingPage from "../components/Loading";
 import NotAuth from "../components/NotAuth";
 
 function Dashboard() {
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
+  const [show, setShow] = useState(false);
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [expenses, setExpenses] = useState([]);
   const [items, setItems] = useState([]);
   const [user, setUser] = useState("");
@@ -20,6 +24,60 @@ function Dashboard() {
     category: "",
     payment_method:"",
   });
+
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+
+  const applyFilter = (event) => {
+    event.preventDefault();
+
+    console.log("Selected Date :",selectedDate);
+  
+    // Filter expenses based on the selected date
+    const filtered = expenses.filter(
+      (expense) => expense.date.split("T")[0] === selectedDate
+    );
+  
+    setFilteredExpenses(filtered);
+    setShow(true);
+  };
+
+  const getAll = (event) => {
+    event.preventDefault();
+    setShow(false);
+  }
+
+  const [sortBy, setSortBy] = useState({
+    column: 'Item', // default sorting column
+    order: 'asc',   // default sorting order
+  });
+
+  const sortTable = (column) => {
+    setSortBy((prevSortBy) => ({
+      column,
+      order: prevSortBy.column === column && prevSortBy.order === 'asc' ? 'desc' : 'asc',
+    }));
+  };
+
+  const sortedExpenses = [...expenses].sort((a, b) => {
+    const aValue = a[sortBy.column];
+    const bValue = b[sortBy.column];
+
+    if (sortBy.order === 'asc') {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return bValue > aValue ? 1 : -1;
+    }
+  });
+
+  const renderSortArrow = (column) => {
+    if (sortConfig.key === column) {
+      return sortConfig.direction === 'ascending' ? '▲' : '▼';
+    }
+    return '';
+  };
+
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -41,19 +99,20 @@ function Dashboard() {
       document.body.appendChild(script);
     };
 
-    loadScript("/js/jquery.min.js", () => {
-      loadScript("/js/popper.js", () => {
-        loadScript("/js/bootstrap.min.js", () => {
-          loadScript("/dashboard/dashboard.js", () => {
-            // All scripts are loaded
-            setScriptsLoaded(true);
-          });
-        });
-      });
-    });
+    // loadScript("/js/jquery.min.js", () => {
+    //   loadScript("/js/popper.js", () => {
+    //     loadScript("/js/bootstrap.min.js", () => {
+    //       loadScript("/dashboard/dashboard.js", () => {
+    //         // All scripts are loaded
+    //         setScriptsLoaded(true);
+    //       });
+    //     });
+    //   });
+    // });
   };
   const handleFetchData = async () => {
     try {
+      setLoading(true)
       const token = localStorage.getItem("token");
       console.log(token);
       if (token) {
@@ -70,26 +129,28 @@ function Dashboard() {
         console.log(response.data);
         setExpenses(response.data.expenses);
         setItems(response.data.items);
-        console.log(response.data.user);
+        // console.log(response.data.user);
 
         setUser(response.data.user);
-
+        setLoading(false)
         setAuthUser(true);
       } else {
+        setLoading(false)
         console.error("Token not found");
         setAuthUser(false);
         // Handle the case where the token is not available or not valid
       }
     } catch (error) {
+      setLoading(false)
       setAuthUser(false);
       console.error("Error fetching data:", error);
     }
   };
 
   useEffect(() => {
-    setLoading(true);
+    
     handleFetchData();
-    setLoading(false);
+    
   }, []);
 
   async function handleSubmit(e) {
@@ -214,9 +275,11 @@ function Dashboard() {
     const prevDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
     dateInput.value = prevDate.toISOString().split("T")[0];
   };
-  if (Loading === true) {
+  
+  
+  if (Loading === true && AuthUser === true) {
     return <LoadingPage />;
-  } else if (AuthUser === false) {
+  } else if (AuthUser === false && Loading === false) {
     return <NotAuth />;
   } else if (AuthUser === true && Loading === false) {
     f_loadScript();
@@ -377,14 +440,15 @@ function Dashboard() {
                       &#x25C0;
                     </span>
                   </div>
-                  <input
-                    type="date"
-                    className="form-control"
-                    id="date-input"
-                    name="date_input"
-                    value={new Date().toISOString().split("T")[0]}
-                    max={new Date().toISOString().split("T")[0]}
-                  />
+                    <input
+                      type="date"
+                      className="form-control"
+                      id="date-input"
+                      name="date_input"
+                      value={selectedDate}
+                      max={new Date().toISOString().split("T")[0]}
+                      onChange={handleDateChange}
+                    />
                   <div className="input-group-append">
                     <span
                       className="input-group-text desktop-only"
@@ -395,71 +459,52 @@ function Dashboard() {
                   </div>
                 </div>
               </div>
-              <div className="form-group">
-                <label htmlFor="sort-select">Sort By:</label>
-                <select
-                  className="form-control"
-                  id="sort-select"
-                  name="sort_select"
-                  required
-                >
-                  <option value="" disabled defaultValue>
-                    Select an option
-                  </option>
-                  <option value="any">Any</option>
-                  <option value="amount_asc">Amount Ascending</option>
-                  <option value="amount_dec">Amount Descending</option>
-                  <option value="category">Category</option>
-                  <option value="date_asc">Date Ascending</option>
-                  <option value="date_dec">Date Descending</option>
-                </select>
-              </div>
+              
               <div style={{ textAlign: "center" }} className="form-group">
                 <button
                   style={{ marginBottom: "20px", marginTop: "10px" }}
                   className="mid_button"
-                  type="submit"
+                  type="button"
                   name="show_all"
                   value="true"
+                  onClick={applyFilter}
                 >
                   Apply filter
                 </button>
                 <br />
               </div>
             </form>
-            <div
-              style={{ textAlign: "center" }}
-              id="no_element"
-              className="hidden"
-            >
-              <h2 style={{ textAlign: "center" }} id="no-elements-message"></h2>
-              <button className="mid_button" type="submit">
-                Show all
-              </button>
-            </div>
+            
           </div>
 
           <div className="container table-responsive">
             <table id="data-table">
               <thead>
                 <tr id="table-data">
-                  <th>Item</th>
-                  <th>Amount in Rs</th>
-                  <th>Date</th>
-                  <th>Category</th>
+                  <th onClick={() => sortTable('description')} className={sortBy.column === 'description' ? sortBy.order : ''}>
+                    Item {renderSortArrow('description')}
+                  </th>
+                  <th onClick={() => sortTable('Amount')} className={sortBy.column === 'Amount' ? sortBy.order : ''}>
+                    Amount in Rs {renderSortArrow('Amount')}
+                  </th>
+                  <th onClick={() => sortTable('date')} className={sortBy.column === 'date' ? sortBy.order : ''}>
+                    Date {renderSortArrow('date')}
+                  </th>
+                  <th onClick={() => sortTable('category')} className={sortBy.column === 'category' ? sortBy.order : ''}>
+                    Category {renderSortArrow('category')}
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {expenses.length > 0 ? (
-                  expenses.map((expense) => (
+              {show ? (<>
+                {filteredExpenses.length > 0 ? (
+                  filteredExpenses.map((expense) => (
                     <tr key={expense._id}>
                       <td>{expense.description}</td>
                       <td>{expense.Amount}</td>
                       <td>
                         {expense.date
-                          ? new Date(expense.date).toLocaleDateString(
-                              "zh-Hans-CN"
-                            )
+                          ? new Date(expense.date).toLocaleDateString("en-IN")
                           : ""}
                       </td>
                       <td>{expense.category}</td>
@@ -470,8 +515,42 @@ function Dashboard() {
                     <td colSpan="4">No expenses found for the selected date</td>
                   </tr>
                 )}
+              </>) :
+                (<>
+                  {sortedExpenses.length > 0 ? (
+                  sortedExpenses.map((expense) => (
+                    <tr key={expense._id}>
+                      <td>{expense.description}</td>
+                      <td>{expense.Amount}</td>
+                      <td>
+                        {expense.date
+                          ? new Date(expense.date).toLocaleDateString("en-IN")
+                          : ""}
+                      </td>
+                      <td>{expense.category}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4">No expenses found for the selected date</td>
+                  </tr>
+                )}
+                </>
+                )
+              }
+                
               </tbody>
             </table>
+            <div
+              style={{ textAlign: "center" }}
+              id="no_element"
+              onClick={getAll}
+            >
+              <h2 style={{ textAlign: "center" }} id="no-elements-message"></h2>
+              <button className="mid_button" type="submit">
+                Show all
+              </button>
+            </div>
           </div>
         </div>
 

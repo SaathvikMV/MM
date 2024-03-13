@@ -34,7 +34,7 @@ function handleSortSelectChange() {
 }
 
 // Attach the event listener to the sort-select dropdown
-sortSelect.addEventListener("change", handleSortSelectChange);
+// sortSelect.addEventListener("change", handleSortSelectChange);
 
 // Store the initial data
 // Store the initial data
@@ -57,11 +57,11 @@ function handleSortSelectChange() {
 }
 
 // Attach the event listener to the sort-select dropdown
-sortSelect.addEventListener("change", handleSortSelectChange);
+// sortSelect.addEventListener("change", handleSortSelectChange);
 
 // Get the table rows and store the initial data
 var tableRows = document.getElementById("table-data");
-console.log(tableRows.length);
+// console.log(tableRows.length);
 if (tableRows.length > 0) {
   for (let i = 1; i < tableRows.length; i++) {
     con
@@ -89,34 +89,34 @@ document
   .getElementsByClassName("hist-form")[0]
   .addEventListener("submit", function (event) {
     event.preventDefault();
-    const filter = event.target.elements.sort_select.value;
-    console.log(filter);
+    // const filter = event.target.elements.sort_select.value;
+    // console.log(filter);
 
     let items = [...initialData]; // Use a copy of the initial data
 
     // Apply filter based on date if selected
-    if (filter !== "date_asc" && filter !== "date_dec") {
-      const data = event.target.elements.date_input.valueAsDate;
-      if (data) {
-        const selectedDate = data.toDateString();
-        items = items.filter(
-          (item) => item.date.toDateString() === selectedDate
-        );
-      }
-    }
+    // if (filter !== "date_asc" && filter !== "date_dec") {
+    //   const data = event.target.elements.date_input.valueAsDate;
+    //   if (data) {
+    //     const selectedDate = data.toDateString();
+    //     items = items.filter(
+    //       (item) => item.date.toDateString() === selectedDate
+    //     );
+    //   }
+    // }
 
-    // Apply sorting based on the selected filter
-    if (filter === "amount_asc") {
-      items.sort((a, b) => a.amount - b.amount);
-    } else if (filter === "amount_dec") {
-      items.sort((a, b) => b.amount - a.amount);
-    } else if (filter === "category") {
-      items.sort((a, b) => a.category.localeCompare(b.category));
-    } else if (filter === "date_asc") {
-      items.sort((a, b) => a.date.getTime() - b.date.getTime());
-    } else if (filter === "date_dec") {
-      items.sort((a, b) => b.date.getTime() - a.date.getTime());
-    }
+    // // Apply sorting based on the selected filter
+    // if (filter === "amount_asc") {
+    //   items.sort((a, b) => a.amount - b.amount);
+    // } else if (filter === "amount_dec") {
+    //   items.sort((a, b) => b.amount - a.amount);
+    // } else if (filter === "category") {
+    //   items.sort((a, b) => a.category.localeCompare(b.category));
+    // } else if (filter === "date_asc") {
+    //   items.sort((a, b) => a.date.getTime() - b.date.getTime());
+    // } else if (filter === "date_dec") {
+    //   items.sort((a, b) => b.date.getTime() - a.date.getTime());
+    // }
 
     const tbody = document.getElementsByTagName("tbody")[0];
     while (tbody.hasChildNodes()) {

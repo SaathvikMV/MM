@@ -685,3 +685,22 @@ table {
       background-color: #290d45;
       cursor: not-allowed;
     }
+/* Style for sorting arrow */
+#table-data th {
+  cursor: pointer;
+  position: relative;
+}
+
+#table-data th::after {
+  content: ' ';
+  display: inline-block;
+  margin-left: 5px;
+}
+
+#table-data th.asc::after {
+  content: '▲';
+}
+
+#table-data th.desc::after {
+  content: '▼';
+}

@@ -243,7 +243,7 @@ function Insights() {
         {
           label: "Budget Dots",
           data: budgetAmounts,
-          pointBackgroundColor: "rgba(0, 255, 0, 1)",
+          pointBackgroundColor: "Black",
           pointRadius: 6,
           pointHoverRadius: 8,
           type: "line", // Set type to "line" for the dots
@@ -287,7 +287,7 @@ function Insights() {
 
     try {
       // Perform filtering based on selectedMonth
-      const filteredData = Backdata.filter((entry) => {
+      const filteredData = Backdata.data.filter((entry) => {
         const entryDate = new Date(entry.date);
         const entryMonth = entryDate.getMonth() + 1;
         const entryYear = entryDate.getFullYear();
@@ -309,8 +309,8 @@ function Insights() {
   const clearFilter = () => {
     setSelectedMonth("");
     setDisplayMonth("");
-    createChartData(Backdata);
-    createPaymentChartData(Backdata);
+    createChartData(Backdata.data);
+    createPaymentChartData(Backdata.data);
   };
 
   const handleYearSubmit = (event) => {
@@ -351,6 +351,7 @@ function Insights() {
             duration: 3000,
             position: "bottom-right",
           });
+          window.location.reload()
         }
       } else {
         console.log("Token not available!!");
@@ -399,7 +400,8 @@ function Insights() {
             <button className="inp-but">+</button>
           </form>
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <button className="inp-but" onClick={clearFilter}>
+            <button className="inp-but mid_button" onClick={clearFilter}
+            style={{backgroundColor:"#aa5dfc", fontWeight:"bolder"}}>
               Clear filter
             </button>
           </div>
@@ -483,7 +485,7 @@ function Insights() {
             />
 
             <button className="inp-but" type="submit">
-              Apply filter
+              +
             </button>
           </form>
           <div
