@@ -370,7 +370,7 @@ function Insights() {
       <Toaster />
       <head>
         <link rel="icon" type="image/png" href="/landing_page/rupee.png" />
-        <title>PennyWise-Insights</title>
+        <title>MoneyMinder-Insights</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link

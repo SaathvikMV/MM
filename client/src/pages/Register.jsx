@@ -117,7 +117,7 @@ const f_emailchange = (e) => {
 `}
     </style>
     <link rel="icon" type="image/png"  href="/landing_page/rupee.png"/>
-    <title>PennyWise-Register</title>
+    <title>MoneyMinder-Register</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css"/>
@@ -128,7 +128,7 @@ const f_emailchange = (e) => {
     <div className="container d-flex justify-content-center">
       <img class="register-image" src="/register/register.png" alt="register" />
         <div class="register-container">
-            <img class="PennyWise_logo" src="/landing_page/PennyWise_logo.png" />
+            <img class="MoneyMinder_logo" src="/landing_page/mm1.png" />
             <h2>Register to Continue</h2>
             <form className="" onSubmit={handleSubmit}>
                 <div className="form-group">

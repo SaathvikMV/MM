@@ -66,7 +66,7 @@ function Landing() {
             <div class="caption-content">
               <div class="container">
                 <div class="font-alt titan-title-size-4">
-                  <img class="logo_pennywise" src="/landing_page/mm1.png" />
+                  <img class="logo_moneyminder" src="/landing_page/mm1.png" />
                 </div>
               </div>
             </div>

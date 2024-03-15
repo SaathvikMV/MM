@@ -94,7 +94,7 @@ function Login() {
 `}
         </style>
         <link rel="icon" type="image/png" href="/landing_page/rupee.png" />
-        <title>PennyWise-Login</title>
+        <title>MoneyMinder-Login</title>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
@@ -115,9 +115,9 @@ function Login() {
           />
           <div className="login-container">
             <img
-              className="PennyWise_logo"
-              src="/landing_page/PennyWise_logo.png"
-              alt="PennyWise Logo"
+              className="MoneyMinder_logo"
+              src="/landing_page/mm1.png"
+              alt="MoneyMinder Logo"
             />
             <h2>Login to Continue</h2>
             <form onSubmit={f_onsubmit}>
