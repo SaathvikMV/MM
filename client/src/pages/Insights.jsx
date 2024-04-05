@@ -46,6 +46,7 @@ function Insights() {
   const [DisplayYear, setDisplayYear] = useState("2024");
   const [noLineData, setNoLineData] = useState(false);
   const [addbudget, setAddbudget] = useState();
+  const [forecast, setForecast] = useState([]);
 
   useEffect(() => {
     const handleFetchData = async () => {
@@ -62,12 +63,12 @@ function Insights() {
               headers,
             }
           );
-
           setBackdata(response.data);
           createChartData(response.data.data);
           createPaymentChartData(response.data.data);
           createLineChartData(response.data, selectedYear);
           setUser(response.data.name);
+          setForecast(response.data.forecast);
 
           setAuthUser(true);
         } else {
@@ -202,7 +203,6 @@ function Insights() {
       );
       return totalAmount;
     });
-    const zeroData = Array(months.length).fill(0);
 
     const updatedLineChartData = {
       labels: months.map((month) => {
@@ -234,7 +234,7 @@ function Insights() {
         },
         {
           label: "Monthly Expenses (Predicted)",
-          data: zeroData,
+          data: forecast,
           borderColor: "rgba(255, 0, 0, 1)",
           borderWidth: 2,
           fill: false,
@@ -351,7 +351,7 @@ function Insights() {
             duration: 3000,
             position: "bottom-right",
           });
-          window.location.reload()
+          window.location.reload();
         }
       } else {
         console.log("Token not available!!");
@@ -400,8 +400,11 @@ function Insights() {
             <button className="inp-but">+</button>
           </form>
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <button className="inp-but mid_button" onClick={clearFilter}
-            style={{backgroundColor:"#aa5dfc", fontWeight:"bolder"}}>
+            <button
+              className="inp-but mid_button"
+              onClick={clearFilter}
+              style={{ backgroundColor: "#aa5dfc", fontWeight: "bolder" }}
+            >
               Clear filter
             </button>
           </div>

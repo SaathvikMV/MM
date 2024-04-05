@@ -2,6 +2,24 @@ const express = require("express");
 const router = express.Router();
 const Expense = require("../models/expense.js");
 const User = require("../models/user.js");
+const HoltWinter = require("./ForecastLogic.js")
+
+// const months = Array.from({ length: 12 }, (_, i) => i + 1);
+
+// const monthlyData = months.map((month) => {
+//   const filteredData = data.data.filter((entry) => {
+//     const entryDate = new Date(entry.date);
+//     const entryMonth = entryDate.getMonth() + 1;
+//     const entryYear = entryDate.getFullYear();
+//     return entryMonth === month && entryYear === parseInt(selectedYear);
+//   });
+
+//   const totalAmount = filteredData.reduce(
+//     (sum, entry) => sum + entry.Amount,
+//     0
+//   );
+//   return totalAmount;
+// });
 
 router.get("/", async (req, res) => {
   try {
@@ -9,6 +27,30 @@ router.get("/", async (req, res) => {
     const userExpense = await Expense.findOne({ user: req.user.id }).populate(
       "user"
     );
+    console.log(userExpense.expense)
+
+    function condenseAmountByMonth(data) {
+      // Create an object to store the condensed amounts
+      let condensedData = new Array(12).fill(0);    
+      // Iterate over the data array
+   
+      data.forEach(item => {
+        // Extract the month and year from the date
+        const monthYear = new Date(item.date).getMonth();
+    
+        // Add the item's amount to the corresponding monthYear key in condensedData
+        condensedData[monthYear] += item.Amount;
+      });
+
+      const currentMonth= new Date().getMonth()
+      condensedData=condensedData.slice(0,currentMonth+1)
+      return condensedData;
+    }
+   condenseAmountByMonth(userExpense.expense)
+
+   const predictedValues = HoltWinter(condenseAmountByMonth(userExpense.expense))
+   console.log(predictedValues)
+    
 
     if (!userExpense) {
       return res
@@ -33,7 +75,9 @@ router.get("/", async (req, res) => {
     res.json({
       data:userExpense.expense, 
       name:username,
-      budget:userExpense.budget});
+      budget:userExpense.budget,
+      forecast:predictedValues
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
