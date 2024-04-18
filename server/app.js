@@ -13,7 +13,6 @@ const User = require("./models/user.js");
 const Authentication = require("./routes/Authentication.js");
 const Dashboard = require("./routes/Dashboard.js");
 const Insights = require("./routes/Insights.js");
-const Loans = require("./routes/Loans.js");
 const bodyParser = require("body-parser");
 const app = express();
 const { verifyToken } = require("./middlewears/jwt_verify.js");
@@ -39,7 +38,6 @@ mongoose
 app.get("/", cors(), async (req, res) => {});
 app.use("/", Authentication);
 app.use("/:user/dashboard", verifyToken, Dashboard);
-app.use("/:user/loans", verifyToken, Loans);
 app.use("/:user/insights", verifyToken, Insights);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
