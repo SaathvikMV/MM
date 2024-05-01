@@ -68,6 +68,7 @@ function Insights() {
           createPaymentChartData(response.data.data);
           createLineChartData(response.data, selectedYear);
           setUser(response.data.name);
+          console.log("Forecast = ",response.data);
           setForecast(response.data.forecast);
 
           setAuthUser(true);
@@ -167,19 +168,10 @@ function Insights() {
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
     let budgetAmounts = Array(months.length).fill(0);
     const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
+  
+    // Extract budget amounts for each month
     for (let i = 0; i < data.budget.length; i++) {
       const budgetEntry = data.budget[i];
       if (budgetEntry.year == selectedYear) {
@@ -187,42 +179,45 @@ function Insights() {
         budgetAmounts[index] = budgetEntry.amount;
       }
     }
-
-    const monthlyData = months.map((month) => {
-      const filteredData = data.data.filter((entry) => {
+  
+    // Extract actual expenses for each month
+    const monthlyData = months.map(month => {
+      const filteredData = data.data.filter(entry => {
         const entryDate = new Date(entry.date);
         const entryMonth = entryDate.getMonth() + 1;
         const entryYear = entryDate.getFullYear();
         return entryMonth === month && entryYear === parseInt(selectedYear);
       });
-      // console.log("Data.Budget", data.budget[0].amount);
-
-      const totalAmount = filteredData.reduce(
-        (sum, entry) => sum + entry.Amount,
-        0
-      );
+      const totalAmount = filteredData.reduce((sum, entry) => sum + entry.Amount, 0);
       return totalAmount;
     });
-
-    const updatedLineChartData = {
-      labels: months.map((month) => {
-        // Format the month labels as desired (e.g., "Jan", "Feb", etc.)
-        const monthNames = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
-        return monthNames[month - 1];
-      }),
+  
+    // Create the dataset for forecast
+    const forecastData = data.forecast || []; // Assuming response.data.forecast is available
+    const forecastDataset = {
+      label: "Monthly Expenses (Predicted)",
+      data: forecastData,
+      borderColor: "rgba(255, 0, 0, 1)", // Orange color for forecast line
+      borderWidth: 2,
+      fill: false,
+      type: "line",
+    };
+  
+    // Create the dataset for budget dots
+    const budgetDataset = {
+      label: "Budget Dots",
+      data: budgetAmounts,
+      pointBackgroundColor: "Black",
+      pointRadius: 6,
+      pointHoverRadius: 8,
+      type: "line",
+      fill: false,
+      showLine: false,
+    };
+  
+    // Define the complete line chart data
+    const lineChartData = {
+      labels: months.map(month => monthNames[month - 1]),
       datasets: [
         {
           label: "Monthly Expenses",
@@ -230,34 +225,16 @@ function Insights() {
           backgroundColor: "rgba(75,192,192,0.7)",
           borderColor: "rgba(75,192,192,1)",
           borderWidth: 1,
-          type: "bar", // Set type to "bar" for the bar chart
+          type: "bar",
         },
-        {
-          label: "Monthly Expenses (Predicted)",
-          data: forecast,
-          borderColor: "rgba(255, 0, 0, 1)",
-          borderWidth: 2,
-          fill: false,
-          type: "line", // Set type to "line" for the line chart
-        },
-        {
-          label: "Budget Dots",
-          data: budgetAmounts,
-          pointBackgroundColor: "Black",
-          pointRadius: 6,
-          pointHoverRadius: 8,
-          type: "line", // Set type to "line" for the dots
-          fill: false,
-          showLine: false,
-        },
+        forecastDataset,
+        budgetDataset,
       ],
     };
-
-    setLineChartData(updatedLineChartData);
-
-    // Check if the total amount for all months is 0
-    setNoLineData(monthlyData.every((amount) => amount === 0));
+  
+    setLineChartData(lineChartData);
   };
+  
 
   const handleChange = (event) => {
     const { name, value } = event.target;
