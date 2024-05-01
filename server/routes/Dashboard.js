@@ -61,9 +61,14 @@ router.post("/addbudget", async (req, res) => {
   const entered_budget = req.body.budget;
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.toLocaleString("default", {
-    month: "short",
-  });
+  let currentMonth = "";
+  if (req.body.currentMonth) {
+    currentMonth = req.body.currentMonth;
+  } else {
+    currentMonth = currentDate.toLocaleString("default", {
+      month: "short",
+    });
+  }
 
   try {
     const userQuery = { user: req.user.id };
@@ -76,12 +81,17 @@ router.post("/addbudget", async (req, res) => {
     if (existingEntry) {
       // Update the existing entry
       const result = await Expense.updateOne(
+        userQuery,
         {
-          ...userQuery,
-          "budget.year": currentYear,
-          "budget.month": currentMonth,
+          $set: {
+            "budget.$[elem].amount": entered_budget,
+          },
         },
-        { $set: { "budget.$.amount": entered_budget } }
+        {
+          arrayFilters: [
+            { "elem.year": currentYear, "elem.month": currentMonth },
+          ],
+        }
       );
 
       if (result.modifiedCount > 0) {
@@ -106,7 +116,7 @@ router.post("/addbudget", async (req, res) => {
       );
 
       if (addResult.modifiedCount > 0 || addResult.upsertedCount > 0) {
-        res.json({ message: "budget added/updated" });
+        res.json({ message: "budget added / updated" });
       } else {
         res.json({ error: "budget not modified!" });
       }
