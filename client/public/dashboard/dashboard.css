@@ -615,6 +615,10 @@ h2.cent{
   background-color:#aa5dfc;
 }
 /* table styles  */
+#tablediv{
+  max-height: 70vh;
+  overflow-y: auto;
+}
 table {
       width: 100%;
       border-collapse: collapse;
@@ -626,7 +630,18 @@ table {
       background-color: #fff;
       border: 1px solid #dee2e6;
     }
+    tbody{
+      z-index: 2;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    thead{
+      position:sticky;
+      top: 0;
+      z-index: 5;
+    }
     th, td {
+      
       padding: 0.75rem;
       vertical-align: top;
       border-top: 1px solid #dee2e6;

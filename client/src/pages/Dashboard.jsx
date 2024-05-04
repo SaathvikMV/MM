@@ -4,25 +4,35 @@ import toast, { Toaster } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import LoadingPage from "../components/Loading";
 import NotAuth from "../components/NotAuth";
+import Loader from "react-dots-loader";
+import "react-dots-loader/index.css";
 
 function Dashboard() {
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
   const [show, setShow] = useState(false);
   const [filteredExpenses, setFilteredExpenses] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "ascending",
+  });
   const [expenses, setExpenses] = useState([]);
   const [items, setItems] = useState([]);
   const [user, setUser] = useState("");
   const [AuthUser, setAuthUser] = useState(false);
   const [Loading, setLoading] = useState(true);
   const [CardsLoading, setCardsLoading] = useState(false);
-  const [scriptsLoaded, setScriptsLoaded] = useState(false);
+  const [CategoriesLoading, setCategoriesLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [customInput, setCustomInput] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     date: "",
     amount: 0,
     category: "",
-    payment_method:"",
+    payment_method: "",
   });
 
   const handleDateChange = (event) => {
@@ -32,13 +42,13 @@ function Dashboard() {
   const applyFilter = (event) => {
     event.preventDefault();
 
-    console.log("Selected Date :",selectedDate);
-  
+    // console.log("Selected Date :", selectedDate);
+
     // Filter expenses based on the selected date
     const filtered = expenses.filter(
       (expense) => expense.date.split("T")[0] === selectedDate
     );
-  
+
     setFilteredExpenses(filtered);
     setShow(true);
   };
@@ -46,17 +56,20 @@ function Dashboard() {
   const getAll = (event) => {
     event.preventDefault();
     setShow(false);
-  }
+  };
 
   const [sortBy, setSortBy] = useState({
-    column: 'Item', // default sorting column
-    order: 'asc',   // default sorting order
+    column: "Item", // default sorting column
+    order: "asc", // default sorting order
   });
 
   const sortTable = (column) => {
     setSortBy((prevSortBy) => ({
       column,
-      order: prevSortBy.column === column && prevSortBy.order === 'asc' ? 'desc' : 'asc',
+      order:
+        prevSortBy.column === column && prevSortBy.order === "asc"
+          ? "desc"
+          : "asc",
     }));
   };
 
@@ -64,7 +77,7 @@ function Dashboard() {
     const aValue = a[sortBy.column];
     const bValue = b[sortBy.column];
 
-    if (sortBy.order === 'asc') {
+    if (sortBy.order === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return bValue > aValue ? 1 : -1;
@@ -73,9 +86,9 @@ function Dashboard() {
 
   const renderSortArrow = (column) => {
     if (sortConfig.key === column) {
-      return sortConfig.direction === 'ascending' ? '▲' : '▼';
+      return sortConfig.direction === "ascending" ? "▲" : "▼";
     }
-    return '';
+    return "";
   };
 
   function handleChange(e) {
@@ -112,9 +125,9 @@ function Dashboard() {
   };
   const handleFetchData = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const token = localStorage.getItem("token");
-      console.log(token);
+      // console.log(token);
       if (token) {
         const headers = {
           Authorization: `Bearer ${token}`,
@@ -126,32 +139,44 @@ function Dashboard() {
             headers,
           }
         );
-        console.log(response.data);
+        // console.log(response.data);
         setExpenses(response.data.expenses);
         setItems(response.data.items);
         // console.log(response.data.user);
 
         setUser(response.data.user);
-        setLoading(false)
+        setLoading(false);
         setAuthUser(true);
       } else {
-        setLoading(false)
+        setLoading(false);
         console.error("Token not found");
         setAuthUser(false);
         // Handle the case where the token is not available or not valid
       }
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       setAuthUser(false);
       console.error("Error fetching data:", error);
     }
   };
 
   useEffect(() => {
-    
     handleFetchData();
-    
   }, []);
+
+  const handleOptionClick = (option) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      category: option,
+    }));
+    setSelectedOption(option);
+    setCustomInput("");
+  };
+
+  // const handleCustomInputChange = (event) => {
+  //   setCustomInput(event.target.value);
+  //   setSelectedOption("");
+  // };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -159,7 +184,7 @@ function Dashboard() {
 
     try {
       const token = localStorage.getItem("token");
-      console.log(token);
+      // console.log(token);
       if (token) {
         const headers = {
           Authorization: `Bearer ${token}`,
@@ -178,7 +203,7 @@ function Dashboard() {
           }
         );
         setCardsLoading(false);
-        console.log(res);
+        // console.log(res);
 
         if (res.data && res.data.error) {
           toast.error(res.data.error, {
@@ -188,6 +213,51 @@ function Dashboard() {
         } else if (res.data) {
           handleFetchData();
           toast.success(res.data.message, {
+            duration: 3000,
+            position: "bottom-right",
+          });
+        }
+      } else {
+        console.log("Token not available!!");
+      }
+    } catch (e) {
+      setLoading(false);
+      // console.log(e);
+      toast.error("An unexpected error occured", {
+        duration: 3000,
+        position: "bottom-right",
+      });
+    }
+  }
+
+  async function fetchCategories() {
+    // e.preventDefault();
+    setCategoriesLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      // console.log(token);
+      if (token) {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const res = await axios.post(
+          `http://localhost:5000/:user/dashboard/categorise`,
+          {
+            item: formData.title,
+          },
+          {
+            headers,
+          }
+        );
+        if ((res.status = 200)) {
+          setOptions(JSON.parse(res.data.predictions.replace(/'/g, '"')));
+        }
+        setCategoriesLoading(false);
+        // console.log(res);
+
+        if (res.data && res.data.error) {
+          toast.error(res.data.error, {
             duration: 3000,
             position: "bottom-right",
           });
@@ -226,7 +296,7 @@ function Dashboard() {
           }
         );
         setCardsLoading(false);
-        console.log(res);
+        // console.log(res);
 
         if (res.data && res.data.error) {
           toast.error(res.data.error, {
@@ -266,6 +336,7 @@ function Dashboard() {
       });
       return;
     }
+    setSelectedDate(nextDate.toISOString().split("T")[0]);
     dateInput.value = nextDate.toISOString().split("T")[0];
   };
 
@@ -273,10 +344,10 @@ function Dashboard() {
     const dateInput = document.getElementById("date-input");
     const currentDate = new Date(dateInput.value);
     const prevDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+    setSelectedDate(prevDate.toISOString().split("T")[0]);
     dateInput.value = prevDate.toISOString().split("T")[0];
   };
-  
-  
+
   if (Loading === true && AuthUser === true) {
     return <LoadingPage />;
   } else if (AuthUser === false && Loading === false) {
@@ -305,6 +376,16 @@ function Dashboard() {
           <h2 className="cent">Add or Delete your expenses here</h2>
           <div>
             <form onSubmit={handleSubmit} className="inp-form" id="inp-form">
+              <label htmlFor="item">Item:</label>
+              <input
+                type="text"
+                name="title"
+                onChange={handleChange}
+                onBlur={formData.title !== "" && fetchCategories}
+                value={formData.title}
+                placeholder="Add item"
+                required
+              />
               <label htmlFor="date">Date:</label>
               <input
                 type="date"
@@ -313,15 +394,6 @@ function Dashboard() {
                 onChange={handleChange}
                 value={formData.date}
                 max={new Date().toISOString().split("T")[0]}
-                required
-              />
-              <label htmlFor="item">Item:</label>
-              <input
-                type="text"
-                name="title"
-                onChange={handleChange}
-                value={formData.title}
-                placeholder="Add item"
                 required
               />
               <label htmlFor="amount">Amount:</label>
@@ -334,24 +406,7 @@ function Dashboard() {
                 onChange={handleChange}
                 required
               />
-              <label htmlFor="category">Category:</label>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                required
-              >
-                <option value="" disabled defaultValue>
-                  Select an option
-                </option>
-                <option value="Food">Food</option>
-                <option value="Housing">Housing</option>
-                <option value="Health">Health</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Savings">Savings</option>
-                <option value="Travel">Travel</option>
-                <option value="Miscellaneous">Miscellaneous</option>
-              </select>
+
               <label htmlFor="payment_method">Payment Method:</label>
               <select
                 name="payment_method"
@@ -367,6 +422,65 @@ function Dashboard() {
                 <option value="CC">Credit Card</option>
                 <option value="DC">Debit Card</option>
               </select>
+              <label htmlFor="category">Category:</label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled defaultValue>
+                  Select an option
+                </option>
+                <option value="Food">Food</option>
+                <option value="Housing">Housing</option>
+                <option value="Health">Health</option>
+                <option value="Personal and Health Care">
+                  Personal and Health Care
+                </option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Savings">Savings</option>
+                <option value="Travel">Travel</option>
+                <option value="Miscellaneous">Miscellaneous</option>
+              </select>
+              <div
+                style={{
+                  width: "full",
+                  display: "flex",
+                  justifyContent: "center",
+                  margin: "10px 0",
+                }}
+              >
+                {CategoriesLoading ? (
+                  <Loader size={10} color={"purple"} />
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-evenly",
+                      width: "full",
+                    }}
+                  >
+                    {options.map((option, index) => (
+                      <div
+                        style={{
+                          color: "white",
+                          padding: "8px 16px",
+                          border: "1px solid #663e93",
+                          borderRadius: "8px",
+                          margin: "0 6px",
+                          cursor: "pointer",
+                          backgroundColor: "#663e93",
+                        }}
+                        key={index}
+                        onClick={() => handleOptionClick(option)}
+                      >
+                        {option}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button type="submit" className="inp-but">
                 +
               </button>
@@ -440,15 +554,15 @@ function Dashboard() {
                       &#x25C0;
                     </span>
                   </div>
-                    <input
-                      type="date"
-                      className="form-control"
-                      id="date-input"
-                      name="date_input"
-                      value={selectedDate}
-                      max={new Date().toISOString().split("T")[0]}
-                      onChange={handleDateChange}
-                    />
+                  <input
+                    type="date"
+                    className="form-control"
+                    id="date-input"
+                    name="date_input"
+                    value={selectedDate}
+                    max={new Date().toISOString().split("T")[0]}
+                    onChange={handleDateChange}
+                  />
                   <div className="input-group-append">
                     <span
                       className="input-group-text desktop-only"
@@ -459,7 +573,7 @@ function Dashboard() {
                   </div>
                 </div>
               </div>
-              
+
               <div style={{ textAlign: "center" }} className="form-group">
                 <button
                   style={{ marginBottom: "20px", marginTop: "10px" }}
@@ -474,75 +588,100 @@ function Dashboard() {
                 <br />
               </div>
             </form>
-            
           </div>
 
           <div className="container table-responsive">
-            <table id="data-table">
-              <thead>
-                <tr id="table-data">
-                  <th onClick={() => sortTable('description')} className={sortBy.column === 'description' ? sortBy.order : ''}>
-                    Item {renderSortArrow('description')}
-                  </th>
-                  <th onClick={() => sortTable('Amount')} className={sortBy.column === 'Amount' ? sortBy.order : ''}>
-                    Amount in Rs {renderSortArrow('Amount')}
-                  </th>
-                  <th onClick={() => sortTable('date')} className={sortBy.column === 'date' ? sortBy.order : ''}>
-                    Date {renderSortArrow('date')}
-                  </th>
-                  <th onClick={() => sortTable('category')} className={sortBy.column === 'category' ? sortBy.order : ''}>
-                    Category {renderSortArrow('category')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-              {show ? (<>
-                {filteredExpenses.length > 0 ? (
-                  filteredExpenses.map((expense) => (
-                    <tr key={expense._id}>
-                      <td>{expense.description}</td>
-                      <td>{expense.Amount}</td>
-                      <td>
-                        {expense.date
-                          ? new Date(expense.date).toLocaleDateString("en-IN")
-                          : ""}
-                      </td>
-                      <td>{expense.category}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4">No expenses found for the selected date</td>
+            <div id="tablediv">
+              <table id="data-table">
+                <thead>
+                  <tr id="table-data">
+                    <th
+                      onClick={() => sortTable("description")}
+                      className={
+                        sortBy.column === "description" ? sortBy.order : ""
+                      }
+                    >
+                      Item {renderSortArrow("description")}
+                    </th>
+                    <th
+                      onClick={() => sortTable("Amount")}
+                      className={sortBy.column === "Amount" ? sortBy.order : ""}
+                    >
+                      Amount in Rs {renderSortArrow("Amount")}
+                    </th>
+                    <th
+                      onClick={() => sortTable("date")}
+                      className={sortBy.column === "date" ? sortBy.order : ""}
+                    >
+                      Date {renderSortArrow("date")}
+                    </th>
+                    <th
+                      onClick={() => sortTable("category")}
+                      className={
+                        sortBy.column === "category" ? sortBy.order : ""
+                      }
+                    >
+                      Category {renderSortArrow("category")}
+                    </th>
                   </tr>
-                )}
-              </>) :
-                (<>
-                  {sortedExpenses.length > 0 ? (
-                  sortedExpenses.map((expense) => (
-                    <tr key={expense._id}>
-                      <td>{expense.description}</td>
-                      <td>{expense.Amount}</td>
-                      <td>
-                        {expense.date
-                          ? new Date(expense.date).toLocaleDateString("en-IN")
-                          : ""}
-                      </td>
-                      <td>{expense.category}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4">No expenses found for the selected date</td>
-                  </tr>
-                )}
-                </>
-                )
-              }
-                
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {show ? (
+                    <>
+                      {filteredExpenses.length > 0 ? (
+                        filteredExpenses.map((expense) => (
+                          <tr key={expense._id}>
+                            <td>{expense.description}</td>
+                            <td>{expense.Amount}</td>
+                            <td>
+                              {expense.date
+                                ? new Date(expense.date).toLocaleDateString(
+                                    "en-IN"
+                                  )
+                                : ""}
+                            </td>
+                            <td>{expense.category}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="4">
+                            No expenses found for the selected date
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {sortedExpenses.length > 0 ? (
+                        sortedExpenses.map((expense) => (
+                          <tr key={expense._id}>
+                            <td>{expense.description}</td>
+                            <td>{expense.Amount}</td>
+                            <td>
+                              {expense.date
+                                ? new Date(expense.date).toLocaleDateString(
+                                    "en-IN"
+                                  )
+                                : ""}
+                            </td>
+                            <td>{expense.category}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="4">
+                            No expenses found for the selected date
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
             <div
-              style={{ textAlign: "center" }}
+              style={{ textAlign: "center", marginTop: "20px" }}
               id="no_element"
               onClick={getAll}
             >

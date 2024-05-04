@@ -4,30 +4,13 @@ const Expense = require("../models/expense.js");
 const User = require("../models/user.js");
 const HoltWinter = require("./ForecastLogic.js")
 
-// const months = Array.from({ length: 12 }, (_, i) => i + 1);
-
-// const monthlyData = months.map((month) => {
-//   const filteredData = data.data.filter((entry) => {
-//     const entryDate = new Date(entry.date);
-//     const entryMonth = entryDate.getMonth() + 1;
-//     const entryYear = entryDate.getFullYear();
-//     return entryMonth === month && entryYear === parseInt(selectedYear);
-//   });
-
-//   const totalAmount = filteredData.reduce(
-//     (sum, entry) => sum + entry.Amount,
-//     0
-//   );
-//   return totalAmount;
-// });
-
 router.get("/", async (req, res) => {
   try {
-    console.log(req.user)
+    // console.log(req.user)
     const userExpense = await Expense.findOne({ user: req.user.id }).populate(
       "user"
     );
-    console.log(userExpense.expense)
+    // console.log(userExpense.expense)
 
     function condenseAmountByMonth(data) {
       // Create an object to store the condensed amounts
@@ -49,7 +32,8 @@ router.get("/", async (req, res) => {
    condenseAmountByMonth(userExpense.expense)
 
    const predictedValues = HoltWinter(condenseAmountByMonth(userExpense.expense))
-   console.log(predictedValues)
+  //  console.log(predictedValues)
+
     
 
     if (!userExpense) {
@@ -67,7 +51,7 @@ router.get("/", async (req, res) => {
     var username = "";
     if (user) {
       username = user.username;
-      console.log("User username:", username);
+      // console.log("User username:", username);
     } else {
       console.log("User not found");
     }

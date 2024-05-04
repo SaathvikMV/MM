@@ -4,7 +4,6 @@ const router = express.Router();
 const passport = require("passport");
 const User = require("../models/user.js");
 const Expenses = require("../models/expense.js");
-const Friends = require("../models/friends.js");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const { verifyToken } = require("../middlewears/jwt_verify.js");
@@ -41,7 +40,7 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
     });
     const registeredUser = await user.save();
-    console.log(registeredUser);
+    // console.log(registeredUser);
     // Generate JWT token
     const token = jwt.sign({ id: registeredUser._id }, "your_secret_key", {
       expiresIn: "1h",
@@ -53,11 +52,6 @@ router.post("/register", async (req, res) => {
     });
     await expense.save();
 
-    const friend = new Friends({
-      user: registeredUser._id,
-      friends: [],
-    });
-    await friend.save();
 
     res.json({
       redirectUrl: `/${registeredUser.username}/dashboard`,

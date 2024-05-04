@@ -68,7 +68,7 @@ function Insights() {
           createPaymentChartData(response.data.data);
           createLineChartData(response.data, selectedYear);
           setUser(response.data.name);
-          console.log("Forecast = ",response.data);
+          // console.log("Forecast = ",response.data);
           setForecast(response.data.forecast);
 
           setAuthUser(true);
@@ -168,9 +168,20 @@ function Insights() {
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
     let budgetAmounts = Array(months.length).fill(0);
     const monthNames = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ];
-  
+
     // Extract budget amounts for each month
     for (let i = 0; i < data.budget.length; i++) {
       const budgetEntry = data.budget[i];
@@ -179,19 +190,22 @@ function Insights() {
         budgetAmounts[index] = budgetEntry.amount;
       }
     }
-  
+
     // Extract actual expenses for each month
-    const monthlyData = months.map(month => {
-      const filteredData = data.data.filter(entry => {
+    const monthlyData = months.map((month) => {
+      const filteredData = data.data.filter((entry) => {
         const entryDate = new Date(entry.date);
         const entryMonth = entryDate.getMonth() + 1;
         const entryYear = entryDate.getFullYear();
         return entryMonth === month && entryYear === parseInt(selectedYear);
       });
-      const totalAmount = filteredData.reduce((sum, entry) => sum + entry.Amount, 0);
+      const totalAmount = filteredData.reduce(
+        (sum, entry) => sum + entry.Amount,
+        0
+      );
       return totalAmount;
     });
-  
+
     // Create the dataset for forecast
     const forecastData = data.forecast || []; // Assuming response.data.forecast is available
     const forecastDataset = {
@@ -202,7 +216,7 @@ function Insights() {
       fill: false,
       type: "line",
     };
-  
+
     // Create the dataset for budget dots
     const budgetDataset = {
       label: "Budget Dots",
@@ -214,10 +228,10 @@ function Insights() {
       fill: false,
       showLine: false,
     };
-  
+
     // Define the complete line chart data
     const lineChartData = {
-      labels: months.map(month => monthNames[month - 1]),
+      labels: months.map((month) => monthNames[month - 1]),
       datasets: [
         {
           label: "Monthly Expenses",
@@ -231,10 +245,9 @@ function Insights() {
         budgetDataset,
       ],
     };
-  
+
     setLineChartData(lineChartData);
   };
-  
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -299,10 +312,10 @@ function Insights() {
 
   async function handleBudgetSubmit(event) {
     event.preventDefault();
-    console.log(addbudget);
+    // console.log(addbudget);
     try {
       const token = localStorage.getItem("token");
-      console.log(token);
+      // console.log(token);
       if (token) {
         const headers = {
           Authorization: `Bearer ${token}`,
@@ -316,7 +329,7 @@ function Insights() {
             headers,
           }
         );
-        console.log(res);
+        // console.log(res);
 
         if (res.data && res.data.error) {
           toast.error(res.data.error, {
@@ -334,7 +347,7 @@ function Insights() {
         console.log("Token not available!!");
       }
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       toast.error("An unexpected error occured", {
         duration: 3000,
         position: "bottom-right",

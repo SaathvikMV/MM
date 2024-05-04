@@ -10,7 +10,7 @@ function Landing() {
   const handleFetchData = async () => {
     try {
       const token = localStorage.getItem("token");
-      console.log(token);
+      // console.log(token);
       if (token) {
         const headers = {
           Authorization: `Bearer ${token}`,
@@ -22,7 +22,7 @@ function Landing() {
             headers,
           }
         );
-        console.log(response.data);
+        // console.log(response.data);
         setUser(response.data.user);
 
         setAuthUser(true);

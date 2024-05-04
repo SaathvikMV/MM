@@ -6,7 +6,7 @@ let seasonalPeriod = 6; // Seasonal period (e.g., 12 for monthly data)
 
 // Train Holt-Winters model
 function trainHoltWinters(data) {
-    console.log("data: ",data)
+    // console.log("data: ",data)
     // Initialize initial level, trend, and seasonal components
     let level = data[0];
     let trend = 0;

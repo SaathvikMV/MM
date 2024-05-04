@@ -3,6 +3,8 @@ const router = express.Router();
 const Expense = require("../models/expense.js");
 const User = require("../models/user.js");
 const verifyToken = require("../middlewears/jwt_verify.js");
+const Categories = require("./Categorise/Categorise.js")
+
 
 router.get("/", async (req, res) => {
   const userExpense = await Expense.findOne({
@@ -10,16 +12,13 @@ router.get("/", async (req, res) => {
   }).populate("user");
   const expenses = userExpense.expense;
   const budget = userExpense.budget;
-
   const user = await User.findById(req.user.id);
   var username = "";
   if (user) {
     username = user.username;
-    console.log("User username:", username);
   } else {
     console.log("User not found");
   }
-  console.log(username);
   const expenDetails = {
     expenses: expenses,
     user: username,
@@ -28,6 +27,17 @@ router.get("/", async (req, res) => {
   };
   res.json(expenDetails);
 });
+
+router.post("/categorise", async (req, res) => {
+  const keyword = req.body.item
+  const answer = await Categories(keyword)
+  .then((result) => {
+     res.json({predictions:result})
+  })
+  .catch((error) => {
+      console.error('Error in categories:', error);
+  });
+})
 
 router.post("/add", async (req, res) => {
   const added_date = req.body.date;
