@@ -106,12 +106,15 @@ function Login() {
       <body>
         <Toaster />
         <div className="container d-flex justify-content-center">
-          <img
-            className="login-image"
-            src="/login/login.png"
-            alt="login"
-            style={{ marginTop: "100px" }}
-          />
+          <a href="localhost:3000">
+            {" "}
+            <img
+              className="login-image"
+              src="/login/login.png"
+              alt="login"
+              style={{ marginTop: "100px" }}
+            />
+          </a>
           <div className="login-container">
             <img
               className="MoneyMinder_logo"

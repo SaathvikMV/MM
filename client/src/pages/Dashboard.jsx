@@ -399,6 +399,7 @@ function Dashboard() {
               <label htmlFor="amount">Amount:</label>
               <input
                 type="number"
+                min={"1"}
                 name="amount"
                 value={formData.amount}
                 placeholder="Amount in Rs"

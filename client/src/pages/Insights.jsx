@@ -517,6 +517,7 @@ function Insights() {
               name="addbudget"
               value={addbudget}
               onChange={handleChange}
+              min={1}
             />
 
             <button className="inp-but" type="submit">
