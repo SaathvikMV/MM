@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-//import Loading_msg from "../components/LoadingPage";
 
 function Login() {
   const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
@@ -31,7 +30,7 @@ function Login() {
       });
 
       setLoading(false);
-      console.log(res);
+      // console.log(res);
 
       if (res.data && res.data.error) {
         toast.error(res.data.error, {
@@ -107,12 +106,15 @@ function Login() {
       <body>
         <Toaster />
         <div className="container d-flex justify-content-center">
-          <img
-            className="login-image"
-            src="/login/login.png"
-            alt="login"
-            style={{ marginTop: "100px" }}
-          />
+          <a href="localhost:3000">
+            {" "}
+            <img
+              className="login-image"
+              src="/login/login.png"
+              alt="login"
+              style={{ marginTop: "100px" }}
+            />
+          </a>
           <div className="login-container">
             <img
               className="MoneyMinder_logo"
@@ -144,9 +146,6 @@ function Login() {
                   value={password}
                   required
                 />
-                <a href="" className="forgot-password">
-                  Forgot Password?
-                </a>
               </div>
               <button type="submit" className="btn btn-block btn-login">
                 Login

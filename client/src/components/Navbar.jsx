@@ -6,7 +6,7 @@ function Navbar(props) {
   return (
     <>
       <nav className="navbar navbar-expand-md">
-        <a className="navbar-brand" href="#">
+        <a className="navbar-brand" href="localhost:3000">
           <img
             style={{ width: "auto", minHeight: "43px" }}
             src="/landing_page/mm2.png"
@@ -44,36 +44,40 @@ function Navbar(props) {
               </NavLink>
             </li>
             <li className="nav-item">
-            {!user ? <></> :
-              <NavLink
-                style={({ isActive, isPending }) => {
-                  return {
-                    fontSize: "1.2em",
-                    fontWeight: isActive ? "bold" : "normal",
-                    color: isPending ? "red" : "white",
-                  };
-                }}
-                to={`/${user}/dashboard`}
-              >
-                <div>Dashboard</div>
-              </NavLink>
-            }
+              {!user ? (
+                <></>
+              ) : (
+                <NavLink
+                  style={({ isActive, isPending }) => {
+                    return {
+                      fontSize: "1.2em",
+                      fontWeight: isActive ? "bold" : "normal",
+                      color: isPending ? "red" : "white",
+                    };
+                  }}
+                  to={`/${user}/dashboard`}
+                >
+                  <div>Dashboard</div>
+                </NavLink>
+              )}
             </li>
             <li className="nav-item">
-            {!user ? <></> : 
-              <NavLink
-                style={({ isActive, isPending }) => {
-                  return {
-                    fontSize: "1.2em",
-                    fontWeight: isActive ? "bold" : "lighter",
-                    color: isPending ? "red" : "white",
-                  };
-                }}
-                to={`/${user}/insights`}
-              >
-                <div>Insights</div>
-              </NavLink>
-            }
+              {!user ? (
+                <></>
+              ) : (
+                <NavLink
+                  style={({ isActive, isPending }) => {
+                    return {
+                      fontSize: "1.2em",
+                      fontWeight: isActive ? "bold" : "lighter",
+                      color: isPending ? "red" : "white",
+                    };
+                  }}
+                  to={`/${user}/insights`}
+                >
+                  <div>Insights</div>
+                </NavLink>
+              )}
             </li>
 
             {/* <li className="nav-item mobile_only">

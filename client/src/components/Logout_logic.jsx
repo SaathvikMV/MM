@@ -17,12 +17,12 @@ function Logout_logic() {
 
         // Clear the token from local storage
         localStorage.removeItem("token");
-        console.log("logout_successful");
+        // console.log("logout_successful");
         // navigating after a brief delay (3 seconds in this case)
-      
-          navigate("/login");
-          console.log("logout_successful");
-         // Adjust the duration as needed
+
+        navigate("/login");
+        // console.log("logout_successful");
+        // Adjust the duration as needed
       } catch (error) {
         console.error("Logout error:", error);
         toast.error("Logout Failed!", {
@@ -30,7 +30,7 @@ function Logout_logic() {
           position: "bottom-right",
         });
 
-        console.log("logout failed!");
+        // console.log("logout failed!");
       }
     };
 

@@ -3,13 +3,13 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
-function Register(){
-//   const [formData, setFormData] = useState({
-//     username: '',
-//     email: '',
-//     password: '',
-//     confirm_password: '',
-//   });
+function Register() {
+  //   const [formData, setFormData] = useState({
+  //     username: '',
+  //     email: '',
+  //     password: '',
+  //     confirm_password: '',
+  //   });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -18,11 +18,11 @@ function Register(){
   const [scriptsLoaded, setScriptsLoaded] = useState(false);
   const navigate = useNavigate();
 
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
+  //   const handleChange = (e) => {
+  //     setFormData({ ...formData, [e.target.name]: e.target.value });
+  //   };
 
-const f_emailchange = (e) => {
+  const f_emailchange = (e) => {
     setEmail(e.target.value);
   };
 
@@ -51,24 +51,24 @@ const f_emailchange = (e) => {
       });
 
       setLoading(false);
-      console.log(res);
+      // console.log(res);
 
       if (res.data && res.data.error) {
-        console.log(res.data);
-        console.log(res.data.error);
+        // console.log(res.data);
+        // console.log(res.data.error);
         toast.error(res.data.error, {
-          position: 'top-right',
+          position: "top-right",
           duration: 3000,
         });
       } else if (res.data) {
         const { token, redirectUrl } = res.data;
-        localStorage.setItem('token', token);
+        localStorage.setItem("token", token);
 
         if (redirectUrl) {
-            navigate(redirectUrl);
+          navigate(redirectUrl);
         } else {
-          toast.error('An error occurred', {
-            position: 'top-right',
+          toast.error("An error occurred", {
+            position: "top-right",
             duration: 3000,
           });
         }
@@ -76,8 +76,8 @@ const f_emailchange = (e) => {
     } catch (error) {
       setLoading(false);
       console.error(error); // Log the entire error object
-      toast.error('An unexpected error occurred', {
-        position: 'top-right',
+      toast.error("An unexpected error occurred", {
+        position: "top-right",
         duration: 3000,
       });
     }
@@ -106,8 +106,8 @@ const f_emailchange = (e) => {
 
   return (
     <>
-    <head>
-    <style>
+      <head>
+        <style>
           {`
       html {
     background-color: #58149f;
@@ -115,79 +115,86 @@ const f_emailchange = (e) => {
     font-family: 'Jost', sans-serif;
     }
 `}
-    </style>
-    <link rel="icon" type="image/png"  href="/landing_page/rupee.png"/>
-    <title>MoneyMinder-Register</title>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="./register.css"/>
-    </head>
-    <body>
-    <Toaster />
-    <div className="container d-flex justify-content-center">
-      <img class="register-image" src="/register/register.png" alt="register" />
-        <div class="register-container">
+        </style>
+        <link rel="icon" type="image/png" href="/landing_page/rupee.png" />
+        <title>MoneyMinder-Register</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css"
+        />
+        <link rel="stylesheet" href="./register.css" />
+      </head>
+      <body>
+        <Toaster />
+        <div className="container d-flex justify-content-center">
+          <img
+            class="register-image"
+            src="/register/register.png"
+            alt="register"
+          />
+          <div class="register-container">
             <img class="MoneyMinder_logo" src="/landing_page/mm1.png" />
             <h2>Register to Continue</h2>
             <form className="" onSubmit={handleSubmit}>
-                <div className="form-group">
+              <div className="form-group">
                 <label htmlFor="name">Name</label>
                 <input
-                    type="text"
-                    className="form-control"
-                    id="name"
-                    name="username"
-                    value={username}
-                    onChange={f_usernamechange}
+                  type="text"
+                  className="form-control"
+                  id="name"
+                  name="username"
+                  value={username}
+                  onChange={f_usernamechange}
                 />
-                </div>
-                <div className="form-group">
+              </div>
+              <div className="form-group">
                 <label htmlFor="email">Email</label>
                 <input
-                    type="text"
-                    className="form-control"
-                    id="email-or-phone"
-                    name="email"
-                    value={email}
-                    onChange={f_emailchange}
-                    required
+                  type="text"
+                  className="form-control"
+                  id="email-or-phone"
+                  name="email"
+                  value={email}
+                  onChange={f_emailchange}
+                  required
                 />
-                </div>
-                <div className="form-group">
+              </div>
+              <div className="form-group">
                 <label htmlFor="password">Password</label>
                 <input
-                    type="password"
-                    className="form-control"
-                    id="password"
-                    name="password"
-                    value={password}
-                    onChange={f_passchange}
+                  type="password"
+                  className="form-control"
+                  id="password"
+                  name="password"
+                  value={password}
+                  onChange={f_passchange}
                 />
-                </div>
-                <div className="form-group">
+              </div>
+              <div className="form-group">
                 <label htmlFor="confirm-password">Confirm Password</label>
                 <input
-                    type="password"
-                    className="form-control"
-                    id="confirm-password"
-                    name="confirm_password"
-                    value={confirm_password}
-                    onChange={f_cpasschange}
+                  type="password"
+                  className="form-control"
+                  id="confirm-password"
+                  name="confirm_password"
+                  value={confirm_password}
+                  onChange={f_cpasschange}
                 />
-                </div>
-                <button type="submit" className="btn btn-block btn-register">
+              </div>
+              <button type="submit" className="btn btn-block btn-register">
                 Register
-                </button>
-                <a href="/login" className="login-link">
+              </button>
+              <a href="/login" className="login-link">
                 Already have an account? Login here.
-                </a>
+              </a>
             </form>
+          </div>
         </div>
-    </div>
-    </body>
+      </body>
     </>
   );
-};
+}
 
 export default Register;
